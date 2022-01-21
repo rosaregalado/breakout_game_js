@@ -29,6 +29,27 @@
     var rightPressed = false;
     var leftPressed = false;
 
+    // event listeners
+    document.addEventListener("keydown", keyDownHandler, false);
+    document.addEventListener("keyup", keyUpHandler, false);
+
+    function keyDownHandler(e) {
+      if (e.key == "Right" || e.key == "ArrowRight") {
+        rightPressed = true;
+      }
+      else if (e.key == "Left" || e.key == "ArrowLeft") {
+        leftPressed = true;
+      }
+    }
+
+    function keyUpHandler(e) {
+      if (e.key == "Right" || e.key == "ArrowRight") {
+        rightPressed = false;
+      }
+      else if (e.key == "Left" || e.key == "ArrowLeft") {
+        leftPressed = false;
+      }
+    }
 
     function drawBall() {
       ctx.beginPath();
@@ -52,57 +73,42 @@
       drawPaddle();
   
       // bounce off the walls
-      // top and bottom
-      if (y + dy > canvas.height || y + dy < 0) {
-        dy = -dy;
-      }
-      // left and right
       if (x + dx > canvas.width-ballRadius || x + dx < ballRadius) {
         dx = -dx;
       }
-      if (y + dy > canvas.height-ballRadius || y + dy < ballRadius) {
+      // create collision between ball and paddle
+      if (y + dy < ballRadius) {
         dy = -dy;
+      } else if (y + dy > canvas.height-ballRadius) {
+        if (x > paddleX && x < paddleX + paddleWidth) {
+          dy = -dy;
+        }
+        // if ball misses paddle, game over
+        else {
+          alert("GAME OVER");
+          document.location.reload();
+          clearInterval(interval);
+        }
       }
+
       // move the paddle
       if (rightPressed) {
         paddleX += 7;
         if (paddleX + paddleWidth > canvas.width) {
           paddleX = canvas.width - paddleWidth;
+        } 
+      } else if (leftPressed) {
+        paddleX -= 7;
+        if (paddleX < 0) {
+          paddleX = 0;
         }
-        else if (leftPressed) {
-          paddleX -= 7;
-          if (paddleX < 0) {
-            paddleX = 0;
-          }
-        }
-        x += dx;
-        y += dy;
       }
-    }
-    // event listeners
-    document.addEventListener("keydown", keyDownHandler, false);
-    document.addEventListener("keyup", keyUpHandler, false);
-
-    function keyDownHandler(e) {
-      if (e.key == "Right" || e.key == "ArrowRight") {
-        rightPressed = true;
-      }
-      else if (e.key == "Left" || e.key == "ArrowLeft") {
-        leftPressed = true;
-      }
-    }
-
-    function keyUpHandler(e) {
-      if (e.key == "Right" || e.key == "ArrowRight") {
-        rightPressed = false;
-      }
-      else if (e.key == "Left" || e.key == "ArrowLeft") {
-        leftPressed = false;
-      }
-    }
-
+      x += dx;
+      y += dy;
+  }
+    
     // draw function will be called every 10 milliseconds
-    setInterval(draw, 10);
+    var interval = setInterval(draw, 10);
 
   </script>
 </body>
