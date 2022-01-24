@@ -42,7 +42,7 @@
     for (var c = 0; c < brickColumnCount; c++) {
       bricks[c] = [];
       for (var r = 0; r < brickRowCount; r++) {
-        bricks[c][r] = {x: 0, y: 0};
+        bricks[c][r] = {x: 0, y: 0, status: 1};
       }
     }
     //-----------------------------------------------------------------
@@ -70,6 +70,24 @@
     // ---------------------------------------------------------------------------
     // functions
 
+    // detect brick collisions
+    function collisionDetection() {
+      // loop through brick rows & columns
+      for (var c = 0; c < brickColumnCount; c++) {
+        for (var r = 0; r < brickRowCount; r++) {
+          var b = bricks[c][r];
+          // track & update the brick status
+          if (b.status == 1) {
+            // make sure the center of the ball is inside the coordinates of one of our bricks
+            if (x > b.x && x < b.x +brickWidth && y > b.y && y < b.y + brickHeight) {
+              dy = -dy; 
+              b.status = 0;
+            }
+          }
+        }
+      }
+    }
+
     function drawBall() {
       ctx.beginPath();
       ctx.arc(x, y, ballRadius, 0, Math.PI*2);
@@ -87,20 +105,24 @@
     }
 
     function drawBricks() {
-      // loop through rows & columns to set (x, y) position of each brick
+      // loop through brick rows & columns to set (x, y) position of each brick
       for (var c = 0; c < brickColumnCount; c++) {
         for (var r = 0; r < brickRowCount; r++) {
-          var brickX = (c*(brickWidth+brickPadding)) + brickOffsetLeft;
-          var brickY = (r*(brickHeight+brickPadding)) + brickOffsetTop;
-          bricks[c][r].x = brickX;
-          bricks[c][r].y = brickY;
+          // check the value of each brick's status
+          if (bricks[c][r].status == 1) {
+            var brickX = (c*(brickWidth+brickPadding)) + brickOffsetLeft;
+            var brickY = (r*(brickHeight+brickPadding)) + brickOffsetTop;
+            bricks[c][r].x = brickX;
+            bricks[c][r].y = brickY;
 
-          // draw bricks
-          ctx.beginPath();
-          ctx.rect(brickX, brickY, brickWidth, brickHeight);
-          ctx.fillStyle = "0095DD";
-          ctx.fill();
-          ctx.closePath();       
+            // draw bricks
+            ctx.beginPath();
+            ctx.rect(brickX, brickY, brickWidth, brickHeight);
+            ctx.fillStyle = "0095DD";
+            ctx.fill();
+            ctx.closePath(); 
+          }
+                
         }
       }
     }
@@ -110,6 +132,7 @@
       drawBricks();
       drawBall();
       drawPaddle();
+      collisionDetection();
   
       // bounce off the walls
       if (x + dx > canvas.width-ballRadius || x + dx < ballRadius) {
