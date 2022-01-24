@@ -38,6 +38,7 @@
     var brickOffsetLeft = 30;
     // keep track of score:
     var score = 0;
+    var lives = 3;
 
     // paint each brick on the screen
     var bricks = [];
@@ -52,14 +53,6 @@
     document.addEventListener("keydown", keyDownHandler, false);
     document.addEventListener("keyup", keyUpHandler, false);
     document.addEventListener("mousemove", mouseMoveHandler, false);
-
-    function mouseMoveHandler(e) {
-      // make the paddle follow the position of the mouse cursor
-      var relativeX = e.clientX - canvas.offsetLeft;
-      if (relativeX > 0 && relativeX < canvas.width) {
-        paddleX = relativeX - paddleWidth/2;
-      }
-    }
 
     function keyDownHandler(e) {
       if (e.key == "Right" || e.key == "ArrowRight") {
@@ -76,6 +69,14 @@
       }
       else if (e.key == "Left" || e.key == "ArrowLeft") {
         leftPressed = false;
+      }
+    }
+
+    function mouseMoveHandler(e) {
+      // make the paddle follow the position of the mouse cursor
+      var relativeX = e.clientX - canvas.offsetLeft;
+      if (relativeX > 0 && relativeX < canvas.width) {
+        paddleX = relativeX - paddleWidth/2;
       }
     }
     // ---------------------------------------------------------------------------
@@ -97,8 +98,6 @@
               if (score == brickRowCount*brickColumnCount) {
                 alert("You win, Congratulations!");
                 document.location.reload();
-                // needed for chrome to end the game
-                clearInterval(interval);
               }
             }
           }
@@ -108,8 +107,14 @@
 
     function drawScore() {
       ctx.font = "16px Arial";
-      ctx.fillStyle = "#0095DD";
+      ctx.fillStyle = "black";
       ctx.fillText("Score: " + score, 8, 20);
+    }
+
+    function drawLives() {
+      ctx.font = "16px Arial";
+      ctx.fillStyle = "black";
+      ctx.fillText("Lives: " + lives, canvas.width-65, 20);
     }
 
     function drawBall() {
@@ -123,7 +128,7 @@
     function drawPaddle() {
       ctx.beginPath();
       ctx.rect(paddleX, canvas.height-paddleHeight, paddleWidth, paddleHeight);
-      ctx.fillStyle = "red";
+      ctx.fillStyle = "black";
       ctx.fill();
       ctx.closePath();
     }
@@ -142,11 +147,10 @@
             // draw bricks
             ctx.beginPath();
             ctx.rect(brickX, brickY, brickWidth, brickHeight);
-            ctx.fillStyle = "0095DD";
+            ctx.fillStyle = "orangered";
             ctx.fill();
             ctx.closePath(); 
           }
-                
         }
       }
     }
@@ -157,6 +161,7 @@
       drawBall();
       drawPaddle();
       drawScore();
+      drawLives();
       collisionDetection();
   
       // bounce off the walls
@@ -170,32 +175,36 @@
         if (x > paddleX && x < paddleX + paddleWidth) {
           dy = -dy;
         }
-        // if ball misses paddle, game over
+        // if ball misses paddle, remove lives until game over
         else {
-          alert("GAME OVER");
-          document.location.reload();
-          clearInterval(interval);
+          lives--;
+          if (!lives) {
+            alert("GAME OVER");
+            document.location.reload();
+            requestAnimationFrame(draw);
+          } else {
+            x = canvas.width/2;
+            y = canvas.height-30;
+            dx = 2;
+            dy = -2;
+            paddleX = (canvas.width-paddleWidth)/2;
+          }
         }
       }
 
       // move the paddle
-      if (rightPressed) {
+      if (rightPressed && paddleX < canvas.width-paddleWidth) {
         paddleX += 7;
-        if (paddleX + paddleWidth > canvas.width) {
-          paddleX = canvas.width - paddleWidth;
-        } 
-      } else if (leftPressed) {
+      } else if (leftPressed && paddleX > 0) {
         paddleX -= 7;
-        if (paddleX < 0) {
-          paddleX = 0;
-        }
       }
       x += dx;
       y += dy;
+      requestAnimationFrame(draw);
   }
     
-    // draw function will be called every 10 milliseconds
-    var interval = setInterval(draw, 10);
+    // draw() function will be executed over and over within a requestAnimationFrame() loop
+    draw();
 
   </script>
 </body>
