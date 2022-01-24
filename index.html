@@ -36,6 +36,8 @@
     var brickPadding = 10;
     var brickOffsetTop = 30;
     var brickOffsetLeft = 30;
+    // keep track of score:
+    var score = 0;
 
     // paint each brick on the screen
     var bricks = [];
@@ -82,10 +84,23 @@
             if (x > b.x && x < b.x +brickWidth && y > b.y && y < b.y + brickHeight) {
               dy = -dy; 
               b.status = 0;
+              score++;
+              if (score == brickRowCount*brickColumnCount) {
+                alert("You win, Congratulations!");
+                document.location.reload();
+                // needed for chrome to end the game
+                clearInterval(interval);
+              }
             }
           }
         }
       }
+    }
+
+    function drawScore() {
+      ctx.font = "16px Arial";
+      ctx.fillStyle = "#0095DD";
+      ctx.fillText("Score: " + score, 8, 20);
     }
 
     function drawBall() {
@@ -132,6 +147,7 @@
       drawBricks();
       drawBall();
       drawPaddle();
+      drawScore();
       collisionDetection();
   
       // bounce off the walls
