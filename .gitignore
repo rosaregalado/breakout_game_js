@@ -13,6 +13,7 @@ jsdoc/
 versions.json
 *.iml
 .eslintcache
+.eslintrc.js
 .cache
 /packages/**/node_modules
 /tools/internal-rules/node_modules
@@ -24,5 +25,6 @@ versions.json
 .temp-eslintcache
 /tests/fixtures/autofix-integration/temp.js
 yarn.lock
+package.json
 package-lock.json
 pnpm-lock.yaml
