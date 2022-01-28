@@ -100,14 +100,14 @@ function collisionDetection() {
 
 function drawScore() {
   ctx.font = '16px Arial';
-  ctx.fillStyle = 'black';
+  ctx.fillStyle = 'white';
   ctx.fillText(`Score:  ${score}`, 8, 20);
 }
 
 function drawLives() {
   ctx.font = '16px Arial';
-  ctx.fillStyle = 'black';
-  ctx.fillText(`Lives: + ${lives}`, canvas.width - 65, 20);
+  ctx.fillStyle = 'white';
+  ctx.fillText(`Lives: + ${lives}`, canvas.width - 85, 20);
 }
 
 function drawBall() {
